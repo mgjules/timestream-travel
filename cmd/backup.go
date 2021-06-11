@@ -77,15 +77,15 @@ var Backup = &cli.Command{
 			Value: 1000,
 		},
 		&cli.BoolFlag{
-			Name:    "debug",
-			Aliases: []string{"d"},
-			Usage:   "To `DEBUG` or NOT",
+			Name:    "verbose",
+			Aliases: []string{"v"},
+			Usage:   "Byakugan!!",
 			Value:   false,
 		},
 	},
 	Action: func(c *cli.Context) error {
 		logger, _ := zap.NewProduction()
-		if c.Bool("debug") {
+		if c.Bool("verbose") {
 			logger, _ = zap.NewDevelopment()
 		}
 		defer logger.Sync()
