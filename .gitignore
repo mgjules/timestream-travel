@@ -1,0 +1,25 @@
+# General
+.DS_Store
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+__debug_bin
+
+# Test binary, build with `go test -c`
+*.test
+cover.html
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# IDEs
+/.idea
+/.vscode
+.env
+
+# Repository specific
+/timestream-travel
