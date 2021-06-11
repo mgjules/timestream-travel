@@ -27,7 +27,7 @@ $ go build .
 ## Example usage
 
 ```shell
-$ ./timestream-travel backup --debug --from "2021-06-09 00:00:00" --to "2021-06-12 00:00:00" --rows 200
+$ ./timestream-travel backup --verbose --from "2021-06-09 00:00:00" --to "2021-06-12 00:00:00" --rows 200
 ```
 
 ## Usage documentation
