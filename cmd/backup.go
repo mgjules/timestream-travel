@@ -64,12 +64,12 @@ var Backup = &cli.Command{
 		&cli.StringFlag{
 			Name:  "from",
 			Usage: "Amazon Timestream `FROM` time value",
-			Value: "now",
+			Value: "2021-06-09 00:00:00",
 		},
 		&cli.StringFlag{
 			Name:  "to",
 			Usage: "Amazon Timestream `TO` time value",
-			Value: "12h",
+			Value: "2021-06-12 00:00:00",
 		},
 		&cli.Int64Flag{
 			Name:  "rows",
@@ -112,6 +112,7 @@ var Backup = &cli.Command{
 		table := c.String("table")
 		partitionColumn := c.String("column")
 
+		// TODO(mike): investigate how to implement relative string time (e.g "now", "+2h", "-2d", etc) 🧐
 		from, err := now.Parse(c.String("from"))
 		if err != nil {
 			sugar.Errorw("time format from", "error", err, "from", c.String("from"))
