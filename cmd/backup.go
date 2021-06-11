@@ -73,7 +73,7 @@ var Backup = &cli.Command{
 		},
 		&cli.Int64Flag{
 			Name:  "rows",
-			Usage: "Number of 'ROWS' per chunk",
+			Usage: "Number of `ROWS` per chunk",
 			Value: 1000,
 		},
 		&cli.BoolFlag{
