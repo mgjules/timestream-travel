@@ -27,7 +27,14 @@ $ go build .
 ## Example usage
 
 ```shell
-$ ./timestream-travel backup --verbose --from "2021-06-09 00:00:00" --to "2021-06-12 00:00:00" --rows 200
+$ ./timestream-travel backup \
+      --verbose \
+      --region "eu-west-2" \
+      --db "test-timestream-db" --tbl "test-timestream-table" \
+      --bucket "test-backup-bucket" \
+      --column "domain" \
+      --from "2021-06-09 00:00:00" --to "2021-06-12 00:00:00" \
+      --rows 200
 ```
 
 ## Usage documentation
