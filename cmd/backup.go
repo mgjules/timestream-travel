@@ -127,20 +127,6 @@ var Backup = &cli.Command{
 
 		currentTime := time.Now()
 
-		from, err := now.Parse(c.String("from"))
-		if err != nil {
-			sugar.Debugw("parse 'from' as time.Time. parsing as duration...", "error", err, "from", c.String("from"))
-			// try parsing as duration
-			fromDur, err := str2duration.ParseDuration(c.String("from"))
-			if err != nil {
-				sugar.Debugw("parse 'from' as time.Duration. using default...", "error", err, "from", c.String("from"))
-				// default to 1 hour ago
-				from = currentTime.Add(-1 * time.Hour)
-			} else {
-				from = currentTime.Add(-fromDur)
-			}
-		}
-
 		to, err := now.Parse(c.String("to"))
 		if err != nil {
 			sugar.Debugw("parse 'to' as time.Time. parsing as duration...", "error", err, "to", c.String("to"))
@@ -152,6 +138,20 @@ var Backup = &cli.Command{
 				to = currentTime
 			} else {
 				to = currentTime.Add(-toDur)
+			}
+		}
+
+		from, err := now.Parse(c.String("from"))
+		if err != nil {
+			sugar.Debugw("parse 'from' as time.Time. parsing as duration...", "error", err, "from", c.String("from"))
+			// try parsing as duration
+			fromDur, err := str2duration.ParseDuration(c.String("from"))
+			if err != nil {
+				sugar.Debugw("parse 'from' as time.Duration. using default...", "error", err, "from", c.String("from"))
+				// default to 1 hour ago relative to 'to'
+				from = to.Add(-1 * time.Hour)
+			} else {
+				from = to.Add(-fromDur)
 			}
 		}
 
