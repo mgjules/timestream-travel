@@ -18,7 +18,10 @@ builds:
       - windows
       - darwin
 archives:
-  - replacements:
+  - format: zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    replacements:
       darwin: MacOS
       linux: Linux
       windows: Windows
