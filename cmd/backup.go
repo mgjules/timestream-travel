@@ -80,6 +80,11 @@ var Backup = &cli.Command{
 			Value: 1000,
 		},
 		&cli.BoolFlag{
+			Name:  "dry-run",
+			Usage: "Do not create backup. Only runs query against Amazon Timestream",
+			Value: false,
+		},
+		&cli.BoolFlag{
 			Name:    "verbose",
 			Aliases: []string{"v"},
 			Usage:   "Byakugan!!",
@@ -93,6 +98,11 @@ var Backup = &cli.Command{
 		}
 		defer logger.Sync()
 		sugar := logger.Sugar()
+
+		isDryRun := c.Bool("dry-run")
+		if isDryRun {
+			sugar.Info("***** RUNNING IN DRY-RUN MODE *****")
+		}
 
 		region := c.String("region")
 
@@ -277,6 +287,11 @@ var Backup = &cli.Command{
 						mu.Lock()
 						totalRowsPerPartitions[partitionValue] += processedRows
 						mu.Unlock()
+
+						if isDryRun {
+							sugar.Infow("not uploading data due to dry run", "partition", partitionValue, "rows", processedRows)
+							return true
+						}
 
 						bucket := c.String("bucket")
 						checksum := crc32.ChecksumIEEE(inMemoryStore.Bytes())
