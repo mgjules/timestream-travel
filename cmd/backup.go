@@ -17,6 +17,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/timestreamquery"
 	"github.com/jinzhu/now"
 	"github.com/urfave/cli/v2"
+	"github.com/xhit/go-str2duration/v2"
 	"go.uber.org/zap"
 )
 
@@ -62,14 +63,16 @@ var Backup = &cli.Command{
 			Value:   "measure_name",
 		},
 		&cli.StringFlag{
-			Name:  "from",
-			Usage: "Amazon Timestream `FROM` time value",
-			Value: "2021-06-09 00:00:00",
+			Name:        "from",
+			Usage:       "Amazon Timestream `FROM` time value. Can be in absolute or relative (e.g 1m, 1h, 1d, 1w)",
+			Value:       "",
+			DefaultText: "1 hour ago",
 		},
 		&cli.StringFlag{
-			Name:  "to",
-			Usage: "Amazon Timestream `TO` time value",
-			Value: "2021-06-12 00:00:00",
+			Name:        "to",
+			Usage:       "Amazon Timestream `TO` time value. Can be in absolute or relative (e.g 1m, 1h, 1d, 1w)",
+			Value:       "",
+			DefaultText: "Current date/time",
 		},
 		&cli.Int64Flag{
 			Name:  "rows",
@@ -112,17 +115,46 @@ var Backup = &cli.Command{
 		table := c.String("table")
 		partitionColumn := c.String("column")
 
-		// TODO(mike): investigate how to implement relative string time (e.g "now", "+2h", "-2d", etc) 🧐
+		currentTime := time.Now()
+
 		from, err := now.Parse(c.String("from"))
 		if err != nil {
-			sugar.Errorw("time format from", "error", err, "from", c.String("from"))
-			return fmt.Errorf("format from: %v", err)
+			sugar.Debugw("parse 'from' as time.Time. parsing as duration...", "error", err, "from", c.String("from"))
+			// try parsing as duration
+			fromDur, err := str2duration.ParseDuration(c.String("from"))
+			if err != nil {
+				sugar.Debugw("parse 'from' as time.Duration. using default...", "error", err, "from", c.String("from"))
+				// default to 1 hour ago
+				from = currentTime.Add(-1 * time.Hour)
+			} else {
+				from = currentTime.Add(-fromDur)
+			}
 		}
 
 		to, err := now.Parse(c.String("to"))
 		if err != nil {
-			sugar.Errorw("time format to", "error", err, "to", c.String("to"))
-			return fmt.Errorf("format to: %v", err)
+			sugar.Debugw("parse 'to' as time.Time. parsing as duration...", "error", err, "to", c.String("to"))
+			// try parsing as duration
+			toDur, err := str2duration.ParseDuration(c.String("to"))
+			if err != nil {
+				sugar.Debugw("parse 'to' as time.Duration. using default...", "error", err, "to", c.String("to"))
+				// default to current time
+				to = currentTime
+			} else {
+				to = currentTime.Add(-toDur)
+			}
+		}
+
+		sugar.Infow("time interval", "from", from.Format(queryTimeFormat), "to", to.Format(queryTimeFormat))
+
+		if from.After(to) {
+			sugar.Errorw("'to' cannot be before 'from'", "from", from.Format(queryTimeFormat), "to", to.Format(queryTimeFormat))
+			return fmt.Errorf("'to' cannot be before 'from'")
+		}
+
+		if from.Equal(to) {
+			sugar.Errorw("'to' cannot be equal to 'from'", "from", from.Format(queryTimeFormat), "to", to.Format(queryTimeFormat))
+			return fmt.Errorf("'to' cannot be equal to 'from'")
 		}
 
 		sql := fmt.Sprintf(
