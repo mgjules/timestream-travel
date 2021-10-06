@@ -179,21 +179,33 @@ var Backup = &cli.Command{
 
 		sugar.Debugw("retrieving partition values...", "sql", sql)
 
-		partitionOutput, err := querySvc.QueryWithContext(c.Context, &timestreamquery.QueryInput{
-			QueryString: aws.String(sql),
-			MaxRows:     aws.Int64(100),
-		})
-		if err != nil {
-			sugar.Errorw("retrieve partition values", "error", err, "sql", sql)
-			return fmt.Errorf("retrieve partition values: %v", err)
-		}
+		var (
+			nextToken       *string = nil
+			partitionValues []string
+		)
 
-		var partitionValues []string
-		for _, row := range partitionOutput.Rows {
-			if row.Data[0].ScalarValue == nil {
-				continue
+		for {
+			partitionOutput, err := querySvc.QueryWithContext(c.Context, &timestreamquery.QueryInput{
+				QueryString: aws.String(sql),
+				NextToken:   nextToken,
+				MaxRows:     aws.Int64(100),
+			})
+			if err != nil {
+				sugar.Errorw("retrieve partition values", "error", err, "sql", sql)
+				return fmt.Errorf("retrieve partition values: %v", err)
 			}
-			partitionValues = append(partitionValues, *row.Data[0].ScalarValue)
+
+			for _, row := range partitionOutput.Rows {
+				if row.Data[0].ScalarValue == nil {
+					continue
+				}
+				partitionValues = append(partitionValues, *row.Data[0].ScalarValue)
+			}
+
+			nextToken = partitionOutput.NextToken
+			if nextToken == nil {
+				break
+			}
 		}
 
 		sugar.Debugw("partition", "column", partitionColumn, "values", partitionValues)
