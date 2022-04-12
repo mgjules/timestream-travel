@@ -10,12 +10,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/RingierIMU/timestream-travel/helpers"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/aws/aws-sdk-go/service/timestreamquery"
 	"github.com/jinzhu/now"
+	"github.com/mgjules/timestream-travel/helpers"
 	"github.com/urfave/cli/v2"
 	"github.com/xhit/go-str2duration/v2"
 	"go.uber.org/zap"
@@ -336,7 +336,6 @@ var Backup = &cli.Command{
 					return
 				}
 				sugar.Infow("finished backing up data", "partition", partitionValue, "rows", totalRowsPerPartitions[partitionValue], "time taken", time.Since(startTimeSinglePartition).String())
-
 			}(partitionValue)
 		}
 

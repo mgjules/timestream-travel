@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/RingierIMU/timestream-travel/cmd"
+	"github.com/mgjules/timestream-travel/cmd"
 	"github.com/urfave/cli/v2"
 )
 

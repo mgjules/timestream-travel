@@ -11,7 +11,7 @@ A simple CLI application to backup time-series data from Amazon Timestream to S3
 
 ## Download the binary
 
-Get the [latest binary](https://github.com/RingierIMU/timestream-travel/releases/latest) from the releases.
+Get the [latest binary](https://github.com/mgjules/timestream-travel/releases/latest) from the releases.
 
 ## OR build it yourself
 
