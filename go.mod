@@ -3,7 +3,7 @@ module github.com/mgjules/timestream-travel
 go 1.18
 
 require (
-	github.com/aws/aws-sdk-go v1.38.58
+	github.com/aws/aws-sdk-go v1.44.262
 	github.com/jinzhu/now v1.1.5
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/xhit/go-str2duration/v2 v2.0.0
