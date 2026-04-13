@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.55.8
 	github.com/jinzhu/now v1.1.5
 	github.com/urfave/cli/v2 v2.27.7
-	github.com/xhit/go-str2duration/v2 v2.0.0
+	github.com/xhit/go-str2duration/v2 v2.1.0
 	go.uber.org/zap v1.24.0
 )
 
